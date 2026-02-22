@@ -10,7 +10,7 @@
 
 所以关键在于，统计子数组中每个数的因子 $2$ 的个数的最小值，以及这个最小值的出现次数。如果最小值的出现次数 $\le k$，那么可以把 $g$ 变成 $2g$。
 
-**注**：设 $x$ 的质因子分解为 $2^{p_1}3^{p_2}5^{p_3}\cdots$，$y$ 的质因子分解为 $2^{q_1}3^{q_2}5^{q_3}\cdots$，则 $\text{GCD}(x,y)$ 的质因子分解为 $2^{\min(p_1,q_1)}3^{\min(p_2,q_2)}5^{\min(p_3,q_3)}\cdots$，这一结论可以推广至多个数的 GCD。这就是为什么需要关注的是「因子 $2$ 的个数的**最小值**」。
+**注**：设 $x$ 的质因数分解为 $2^{p_1}3^{p_2}5^{p_3}\cdots$，$y$ 的质因数分解为 $2^{q_1}3^{q_2}5^{q_3}\cdots$，则 $\text{GCD}(x,y)$ 的质因数分解为 $2^{\min(p_1,q_1)}3^{\min(p_2,q_2)}5^{\min(p_3,q_3)}\cdots$，这一结论可以推广至多个数的 GCD。这就是为什么需要关注的是「因子 $2$ 的个数的**最小值**」。
 
 代码实现时，不需要写循环统计因子 $2$ 的个数，也不需要调用库函数统计尾零的个数，直接用 $\textit{nums}[j]$ 的 $\text{lowbit}$ 代替，因为 $\text{lowbit}$ 相当于因子 $2$ 的乘积，可以改成求 $\text{lowbit}$ 的最小值及其出现次数。
 
@@ -19,7 +19,8 @@
 [本题视频讲解](https://www.bilibili.com/video/BV1rET9zsEsB/?t=11m24s)，欢迎点赞关注~
 
 ```py [sol-Python3]
-max = lambda a, b: b if b > a else a  # 手写 max 更快
+# 手写 max 更快
+max = lambda a, b: b if b > a else a
 
 class Solution:
     def maxGCDScore(self, nums: List[int], k: int) -> int:
