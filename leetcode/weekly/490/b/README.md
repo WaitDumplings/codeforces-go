@@ -130,6 +130,13 @@ $$
 1,2,145,40558
 $$
 
+```py
+class Solution:
+    def isDigitorialPermutation(self, n: int) -> bool:
+        s = ''.join(sorted(str(n)))
+        return s in ('1', '2', '145', '04558')
+```
+
 ## 相似题目
 
 [49. 字母异位词分组](https://leetcode.cn/problems/group-anagrams/)
