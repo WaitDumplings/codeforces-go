@@ -304,8 +304,6 @@ $$
 
 证明见 [上取整下取整转换公式的证明](https://zhuanlan.zhihu.com/p/1890356682149838951)。
 
-[本题视频讲解](https://www.bilibili.com/video/BV1aCaGzWEm4/?t=14m54s)，欢迎点赞关注~
-
 ```py [sol-Python3]
 class Solution:
     def minOperations(self, s: str, k: int) -> int:
