@@ -112,9 +112,9 @@ class Solution {
             return e2 == 0 && e3 == 0 && e5 == 0 ? 1 : 0; // k 变成 1
         }
 
-        // 把 i,e2,e3,e5 拼成一个 int（每个数至多 6 位）
+        // 把 i,e2,e3,e5 拼成一个 int（每个数至多 7 位）
         int n = es.length;
-        int key = i << 18 | (e2 + n * 2) << 12 | (e3 + n) << 6 | (e5 + n);
+        int key = i << 21 | (e2 + n * 2) << 14 | (e3 + n) << 7 | (e5 + n);
         if (memo.containsKey(key)) {
             return memo.get(key);
         }
@@ -174,8 +174,8 @@ public:
                 return e2 == 0 && e3 == 0 && e5 == 0; // k 变成 1
             }
 
-            // 把 i,e2,e3,e5 拼成一个 int（每个数至多 6 位）
-            int key = i << 18 | (e2 + n * 2) << 12 | (e3 + n) << 6 | (e5 + n);
+            // 把 i,e2,e3,e5 拼成一个 int（每个数至多 7 位）
+            int key = i << 21 | (e2 + n * 2) << 14 | (e3 + n) << 7 | (e5 + n);
             auto it = memo.find(key);
             if (it != memo.end()) {
                 return it->second;
@@ -288,6 +288,142 @@ class Solution:
             return res1 + res2 + res3
 
         return dfs(len(nums) - 1, 1, 1)  # 从 1/1 开始，目标是变成 k/1
+```
+
+```java [sol-Java]
+class Solution {
+    private record Args(int i, long p, long q) {
+    }
+
+    public int countSequences(int[] nums, long k) {
+        Map<Args, Integer> memo = new HashMap<>();
+        return dfs(nums.length - 1, 1, 1, nums, k, memo); // 从 1/1 开始，目标是变成 k/1
+    }
+
+    private int dfs(int i, long p, long q, int[] nums, long k, Map<Args, Integer> memo) {
+        if (i < 0) {
+            return p == k && q == 1 ? 1 : 0;
+        }
+
+        Args t = new Args(i, p, q);
+        Integer cachedRes = memo.get(t);
+        if (cachedRes != null) {
+            return cachedRes;
+        }
+
+        int x = nums[i];
+        long g = gcd(p, q * x);
+        int res1 = dfs(i - 1, p / g, q * x / g, nums, k, memo); // 除以 nums[i]
+        g = gcd(p * x, q);
+        int res2 = dfs(i - 1, p * x / g, q / g, nums, k, memo); // 乘以 nums[i]
+        int res3 = dfs(i - 1, p, q, nums, k, memo); // 不变
+        int res = res1 + res2 + res3;
+
+        memo.put(t, res);
+        return res;
+    }
+
+    private long gcd(long a, long b) {
+        while (a != 0) {
+            long tmp = a;
+            a = b % a;
+            b = tmp;
+        }
+        return b;
+    }
+}
+```
+
+```cpp [sol-C++]
+class Solution {
+public:
+    int countSequences(vector<int>& nums, long long k) {
+        // 用 unordered_map 的写法见另一份代码【C++ 自定义哈希】
+        map<tuple<int, long long, long long>, int> memo;
+
+        auto dfs = [&](this auto&& dfs, int i, long long p, long long q) -> int {
+            if (i < 0) {
+                return p == k && q == 1;
+            }
+
+            auto t = tuple(i, p, q);
+            auto it = memo.find(t);
+            if (it != memo.end()) {
+                return it->second;
+            }
+
+            int x = nums[i];
+            long long g = gcd(p, q * x);
+            int res1 = dfs(i - 1, p / g, q * x / g); // 除以 nums[i]
+            g = gcd(p * x, q);
+            int res2 = dfs(i - 1, p * x / g, q / g); // 乘以 nums[i]
+            int res3 = dfs(i - 1, p, q); // 不变
+            int res = res1 + res2 + res3;
+
+            memo[t] = res;
+            return res;
+        };
+
+        return dfs(nums.size() - 1, 1, 1); // 从 1/1 开始，目标是变成 k/1
+    }
+};
+```
+
+```cpp [sol-C++ 自定义哈希]
+struct TupleHash {
+    template<typename T>
+    static void hash_combine(size_t& seed, const T& v) {
+        // 参考 boost::hash_combine
+        seed ^= hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+
+    template<typename Tuple, size_t Index = 0>
+    static void hash_tuple(size_t& seed, const Tuple& t) {
+        if constexpr (Index < tuple_size_v<Tuple>) {
+            hash_combine(seed, get<Index>(t));
+            hash_tuple<Tuple, Index + 1>(seed, t);
+        }
+    }
+
+    template<typename... Ts>
+    size_t operator()(const tuple<Ts...>& t) const {
+        size_t seed = 0;
+        hash_tuple(seed, t);
+        return seed;
+    }
+};
+
+class Solution {
+public:
+    int countSequences(vector<int>& nums, long long k) {
+        unordered_map<tuple<int, long long, long long>, int, TupleHash> memo;
+
+        auto dfs = [&](this auto&& dfs, int i, long long p, long long q) -> int {
+            if (i < 0) {
+                return p == k && q == 1;
+            }
+
+            auto t = tuple(i, p, q);
+            auto it = memo.find(t);
+            if (it != memo.end()) {
+                return it->second;
+            }
+
+            int x = nums[i];
+            long long g = gcd(p, q * x);
+            int res1 = dfs(i - 1, p / g, q * x / g); // 除以 nums[i]
+            g = gcd(p * x, q);
+            int res2 = dfs(i - 1, p * x / g, q / g); // 乘以 nums[i]
+            int res3 = dfs(i - 1, p, q); // 不变
+            int res = res1 + res2 + res3;
+
+            memo[t] = res;
+            return res;
+        };
+
+        return dfs(nums.size() - 1, 1, 1); // 从 1/1 开始，目标是变成 k/1
+    }
+};
 ```
 
 ```go [sol-Go]
