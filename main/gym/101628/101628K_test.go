@@ -1,4 +1,4 @@
-package main
+package _01628
 
 import (
 	"github.com/EndlessCheng/codeforces-go/main/testutil"
