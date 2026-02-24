@@ -99,7 +99,8 @@ public:
 
         int n = a.size();
         vector<long long> memo(n, -1); // -1 表示没有计算过
-        auto dfs = [&](auto&& dfs, int i) -> long long {
+
+        auto dfs = [&](this auto&& dfs, int i) -> long long {
             if (i < 0) {
                 return 0;
             }
@@ -113,9 +114,10 @@ public:
             while (j && a[j - 1].first >= x - 2) {
                 j--;
             }
-            return res = max(dfs(dfs, i - 1), dfs(dfs, j - 1) + (long long) x * c);
+            return res = max(dfs(i - 1), dfs(j - 1) + 1LL * x * c);
         };
-        return dfs(dfs, n - 1);
+
+        return dfs(n - 1);
     }
 };
 ```
@@ -262,7 +264,7 @@ public:
             while (a[j].first < x - 2) {
                 j++;
             }
-            f[i + 1] = max(f[i], f[j] + (long long) x * c);
+            f[i + 1] = max(f[i], f[j] + 1LL * x * c);
         }
         return f[n];
     }
