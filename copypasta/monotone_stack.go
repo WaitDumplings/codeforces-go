@@ -84,6 +84,7 @@ https://atcoder.jp/contests/arc134/tasks/arc134_d 双序列
    - https://atcoder.jp/contests/abc311/tasks/abc311_g 枚举上下边界
 https://codeforces.com/problemset/problem/1750/E 2400 所有括号子串变成平衡的最小操作次数总和
 https://codeforces.com/problemset/problem/1827/B2 2400 Range Sorting 双单调栈
+https://codeforces.com/problemset/problem/1037/F 2500
 https://codeforces.com/problemset/problem/1730/E 2700 最大值是最小值的倍数
 https://atcoder.jp/contests/abc140/tasks/abc140_e 子数组第二大数字的和
 更多「贡献」话题见 common.go
@@ -151,7 +152,7 @@ func monotoneStack(a []int) (ans int) {
 		rightLE := make([]int, len(a)) // a[rightLE[i]] <= a[i]
 		st := []int{-1}
 		for i, v := range a {
-			for len(st) > 1 && v <= a[st[len(st)-1]] {
+			for len(st) > 1 && a[st[len(st)-1]] >= v {
 				rightLE[st[len(st)-1]] = i
 				st = st[:len(st)-1]
 			}
@@ -321,7 +322,7 @@ func permLR(perm []int) ([]int, []int) {
 	// 注：无脑的写法是用有序集合维护「剩余未被删除的下标」，或者并查集（适用场景更多）
 	n := len(perm)
 	pos := make([]int, n+1)
-	left := make([]int, n+2)
+	left := make([]int, n+2) // 下标从 0 开始的写法见后面
 	right := make([]int, n+1)
 	for i := 1; i <= n; i++ {
 		pos[perm[i-1]] = i
@@ -346,8 +347,34 @@ func permLR(perm []int) ([]int, []int) {
 
 		del(i) // 从链表中删除 v
 	}
+
+	{
+		// 写法二（下标从 0 开始）
+		// 模拟双向链表
+		// https://codeforces.com/problemset/problem/899/E 2000
+		prev := make([]int, n)
+		next := make([]int, n)
+		for i := range n {
+			prev[i] = i - 1
+			next[i] = i + 1
+		}
+		del := func(i int) {
+			// 注：不能访问已删除元素的 prev 和 next，这种场景请使用并查集或者有序集合
+			l, r := prev[i], next[i]
+			if l >= 0 {
+				next[l] = r
+			}
+			if r < n {
+				prev[r] = l
+			}
+		}
+		_ = del
+	}
+
 	return left, right
 }
+
+// 
 
 // 字典序最小的无重复字符的子序列，包含原串所有字符
 // LC316 https://leetcode.cn/problems/remove-duplicate-letters/
